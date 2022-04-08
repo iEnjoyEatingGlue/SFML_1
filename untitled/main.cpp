@@ -38,8 +38,8 @@ int main() {
 
         sf::Time elapsed = clock.restart();
         time_passed = time_passed + elapsed.asSeconds();
-        std::cout << "time between successive runs in microseconds: " << elapsed.asMicroseconds() << std::endl;
-        std::cout << "frames per second: " << 1.0/elapsed.asSeconds() << std::endl;
+//        std::cout << "time between successive runs in microseconds: " << elapsed.asMicroseconds() << std::endl;
+//        std::cout << "frames per second: " << 1.0/elapsed.asSeconds() << std::endl;
         sf::Event event;
         while (window.pollEvent(event)) {
             // "close requested" event: we close the window
@@ -56,7 +56,7 @@ int main() {
         window.draw(triangle);
 
         window.getSize();
-        std::cout << window.getSize().y << std::endl;
+//        std::cout << window.getSize().y << std::endl;
 
         sf::FloatRect rectangle_bounds = rectangle.getGlobalBounds();
 
