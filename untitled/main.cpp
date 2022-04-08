@@ -38,9 +38,8 @@ int main() {
 
         sf::Time elapsed = clock.restart();
         time_passed = time_passed + elapsed.asSeconds();
-//        std::cout << "time between successive runs in microseconds: " << elapsed.asMicroseconds() << std::endl;
-//        std::cout << "frames per second: " << 1.0/elapsed.asSeconds() << std::endl;
-        // check all the window's events that were triggered since the last iteration of the loop
+        std::cout << "time between successive runs in microseconds: " << elapsed.asMicroseconds() << std::endl;
+        std::cout << "frames per second: " << 1.0/elapsed.asSeconds() << std::endl;
         sf::Event event;
         while (window.pollEvent(event)) {
             // "close requested" event: we close the window
@@ -60,8 +59,7 @@ int main() {
         std::cout << window.getSize().y << std::endl;
 
         sf::FloatRect rectangle_bounds = rectangle.getGlobalBounds();
-//               std::cout << rectangle_bounds.top << " " << rectangle_bounds.left << " " ;
-//               std::cout << rectangle_bounds.width << " " << rectangle_bounds.height << std::endl;
+
         rectangle_bounds_right = rectangle_bounds.left + rectangle_bounds.width;
         rectangle_bounds_bottom = rectangle_bounds.top + rectangle_bounds.height;
 
@@ -77,8 +75,6 @@ int main() {
             srand(time(NULL));
             rectangle.setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
         }
-
-
 
         float x_speed = rectangle_velocity_x * elapsed.asSeconds();
         float y_speed = rectangle_velocity_y * elapsed.asSeconds();
