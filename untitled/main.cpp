@@ -2,9 +2,84 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-int main() {
+class CustomRectangleShape: public sf::RectangleShape
+{
+public:
+    CustomRectangleShape(sf::Vector2f size,sf::Vector2f position): sf::RectangleShape(size)
+    {
+        setPosition(position);
+    }
+    void setSpeed(const int &x,const int &y,const int &rot)
+    {
+        m_speed_x = x;
+        m_speed_y = y;
+        rot_speed = rot;
+    }
+    void animate(const sf::Time &elapsed)
+    {
+        bounce();
+        float time = elapsed.asSeconds();
+        move(m_speed_x*time,m_speed_y*time);
+        rotate(rot_speed*time);
+    }
+    void setBounds(const float &top,const float &bot,const float &left,const float &right)
+    {
+        bound_top = top;
+        bound_bottom = bot;
+        bound_left = left;
+        bound_right = right;
+    }
+
+private:
+    int m_speed_x = 0;
+    int m_speed_y = 0;
+    int rot_speed = 0;
+
+    float bound_top = 0;
+    float bound_bottom = 0;
+    float bound_left = 0;
+    float bound_right = 0;
+
+    void bounce()
+    {
+                sf::FloatRect rectangle_bounds_2 = getGlobalBounds();
+
+                if(rectangle_bounds_2.top <= bound_top){
+                    m_speed_y = abs(m_speed_y);
+                    setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+                }
+
+                if(rectangle_bounds_2.top + rectangle_bounds_2.height >= bound_bottom){
+                    m_speed_y = abs(m_speed_y) * -1;
+                    setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+                }
+
+                if(rectangle_bounds_2.left <= bound_left ){
+                   m_speed_x = abs(m_speed_x);
+                   setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+                }
+
+                if(rectangle_bounds_2.left + rectangle_bounds_2.width >= bound_right){
+                    m_speed_x = abs(m_speed_x) * -1;
+                    setFillColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
+                }
+    }
+};
+
+
+
+int main()
+{
     // create the window
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+
+    sf::Vector2f size(120.0, 60.0);
+    sf::Vector2f position(120.0, 60.0);
+    CustomRectangleShape rectangle_2(size, position);
+    rectangle_2.setFillColor(sf::Color(4, 50, 250));
+    rectangle_2.setSpeed(100, 200, 50);
+    rectangle_2.setBounds(0, 600, 0,800);
+
 
     // create some shapes
     sf::CircleShape circle(100.0);
@@ -40,23 +115,16 @@ int main() {
         time_passed = time_passed + elapsed.asSeconds();
 //        std::cout << "time between successive runs in microseconds: " << elapsed.asMicroseconds() << std::endl;
 //        std::cout << "frames per second: " << 1.0/elapsed.asSeconds() << std::endl;
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
 
-        // clear the window with black color
-        window.clear(sf::Color::Black);
+        float x_speed = rectangle_velocity_x * elapsed.asSeconds();
+        float y_speed = rectangle_velocity_y * elapsed.asSeconds();
+        float rotation = (rectangle_angular_velocity * elapsed.asSeconds());
 
-        // draw everything here...
-        window.draw(circle);
-        window.draw(rectangle);
-        window.draw(triangle);
+        rectangle.move(x_speed,y_speed);
+        rectangle.rotate(rotation);
+//        rectangle_2.animate(elapsed);
 
         window.getSize();
-//        std::cout << window.getSize().y << std::endl;
 
         sf::FloatRect rectangle_bounds = rectangle.getGlobalBounds();
 
@@ -66,22 +134,51 @@ int main() {
         if(rectangle_bounds.left < 0 || rectangle_bounds_right > window.getSize().x)
         {
             rectangle_velocity_x = rectangle_velocity_x * (-1.0);
-            srand(time(NULL));
+//            srand(time(NULL));
             rectangle.setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
         }
-        if(rectangle_bounds.top > window.getSize().y || rectangle_bounds_bottom < 0)
+        if(rectangle_bounds_bottom > window.getSize().y || rectangle_bounds.top < 0)
         {
+
             rectangle_velocity_y = rectangle_velocity_y * (-1.0);
-            srand(time(NULL));
+//            srand(time(NULL));
             rectangle.setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
         }
 
-        float x_speed = rectangle_velocity_x * elapsed.asSeconds();
-        float y_speed = rectangle_velocity_y * elapsed.asSeconds();
-        float rotation = (rectangle_angular_velocity * elapsed.asSeconds());
 
-        rectangle.move(x_speed,y_speed);
-        rectangle.rotate(rotation);
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // "close requested" event: we close the window
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+        if(event.type == sf::Event::KeyReleased)
+                    {
+                        if(event.key.code == sf::Keyboard::Space)
+                        {
+                            rectangle_2.animate(elapsed);
+
+                            std::cout << "Space released" << std::endl;
+                        }
+                    }
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                {
+                    rectangle_2.animate(elapsed);
+                }
+
+        // clear the window with black color
+        window.clear(sf::Color::Black);
+
+        // draw everything here...
+        window.draw(circle);
+        window.draw(rectangle);
+        window.draw(triangle);
+        window.draw(rectangle_2);
+
+
+
+
 
         // end the current frame
         window.display();
@@ -89,3 +186,59 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//class Vehicle {
+
+//public:
+//    std::string name() { return name_; }
+//    int number_of_wheels() { return number_of_wheels_; }
+//    std::string propulsion_type() { return propulsion_type_; }
+//    double max_speed() { return max_speed_; }
+
+//protected:
+//    Vehicle(const std::string &name, int number_of_wheels,
+//            const std::string &propulsion_type, double max_speed)
+//      : name_(name), number_of_wheels_(number_of_wheels),
+//        propulsion_type_(propulsion_type), max_speed_(max_speed) {}
+
+//    std::string name_;
+//    int number_of_wheels_;
+//    std::string propulsion_type_;
+//    double max_speed_;
+//};
+
+
+//class Car : public Vehicle {
+
+//public:
+//    Car(const std::string &name, const std::string &propulsion_type,
+//        double max_speed, bool has_abs)
+//        : Vehicle(name, 4, propulsion_type, max_speed),
+//          has_abs_(has_abs) {}
+
+//    bool has_abs() { return has_abs_; }
+
+//private:
+//    bool has_abs_;
+//};
+
+//int main()
+//{
+//    Car passat("Volkswagen Passat", "Diesel", 200, true);
+//}
+
+
